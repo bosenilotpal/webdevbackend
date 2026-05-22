@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Class, Gym, Plans, Trainer
+from .models import Class, CmsItem, Gym, Plans, Trainer
 
 
 def _absolute_image_url(request, fieldfile):
@@ -40,7 +40,11 @@ class GymSerializer(serializers.ModelSerializer):
 
 
 class ClassSerializer(serializers.ModelSerializer):
-    image_url = serializers.SerializerMethodField()
+    gym_id = serializers.PrimaryKeyRelatedField(
+        queryset=Gym.objects.all(), required=False
+    )
+    description = serializers.CharField(required=False, allow_blank=True, default='')
+    image_url = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
         model = Class
@@ -57,9 +61,14 @@ class ClassSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
         ]
+        read_only_fields = ['id', 'sort_order', 'created_at', 'updated_at']
 
-    def get_image_url(self, obj):
-        return _absolute_image_url(self.context.get('request'), obj.image_url)
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['image_url'] = _absolute_image_url(
+            self.context.get('request'), instance.image_url
+        )
+        return data
 
 
 class PlanSerializer(serializers.ModelSerializer):
@@ -80,8 +89,27 @@ class PlanSerializer(serializers.ModelSerializer):
         ]
 
 
+class CmsItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CmsItem
+        fields = [
+            'id',
+            'gym_id',
+            'name',
+            'content',
+            'type',
+            'created_at',
+            'updated_at',
+        ]
+        read_only_fields = ['id', 'gym_id', 'name', 'type', 'created_at', 'updated_at']
+
+
 class TrainerSerializer(serializers.ModelSerializer):
-    image_url = serializers.SerializerMethodField()
+    gym_id = serializers.PrimaryKeyRelatedField(
+        queryset=Gym.objects.all(), required=False
+    )
+    bio = serializers.CharField(required=False, allow_blank=True, default='')
+    image_url = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
         model = Trainer
@@ -96,6 +124,11 @@ class TrainerSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
         ]
+        read_only_fields = ['id', 'sort_order', 'created_at', 'updated_at']
 
-    def get_image_url(self, obj):
-        return _absolute_image_url(self.context.get('request'), obj.image_url)
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['image_url'] = _absolute_image_url(
+            self.context.get('request'), instance.image_url
+        )
+        return data

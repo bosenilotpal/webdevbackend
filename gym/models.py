@@ -83,4 +83,32 @@ class Trainer(models.Model):
         verbose_name = "Trainer"
         verbose_name_plural = "Trainers"
         ordering = ['sort_order']
-    
+
+
+class CmsItem(models.Model):
+    TYPE_CHOICES = [
+        ('text', 'Text'),
+        ('image', 'Image'),
+        ('banner', 'Banner'),
+    ]
+
+    gym_id = models.ForeignKey(Gym, on_delete=models.CASCADE, related_name='cms_items')
+    name = models.CharField(max_length=255)
+    content = models.TextField()
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='text')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.gym_id.name} — {self.name}'
+
+    class Meta:
+        verbose_name = 'CMS Item'
+        verbose_name_plural = 'CMS Items'
+        ordering = ['name']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['gym_id', 'name'],
+                name='unique_cms_item_per_gym',
+            ),
+        ]

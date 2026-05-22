@@ -28,3 +28,5 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     # upload_to='gym_images/' with MEDIA_ROOT=BASE_DIR → files at <BASE_DIR>/gym_images/
     urlpatterns += static('gym_images/', document_root=settings.MEDIA_ROOT / 'gym_images')
+    urlpatterns += static('trainer_images/', document_root=settings.MEDIA_ROOT / 'trainer_images')
+    urlpatterns += static('class_images/', document_root=settings.MEDIA_ROOT / 'class_images')
