@@ -23,9 +23,10 @@ class ClassViewSet(OwnerGymQuerysetMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedForWrite, IsGymOwnerOrReadOnly]
 
 
-class PlanViewSet(OwnerGymQuerysetMixin, viewsets.ReadOnlyModelViewSet):
+class PlanViewSet(OwnerGymQuerysetMixin, viewsets.ModelViewSet):
     serializer_class = PlanSerializer
     queryset = Plans.objects.select_related('gym_id').prefetch_related('classes').all()
+    permission_classes = [IsAuthenticatedForWrite, IsGymOwnerOrReadOnly]
 
 
 class TrainerViewSet(OwnerGymQuerysetMixin, viewsets.ModelViewSet):

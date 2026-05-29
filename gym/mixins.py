@@ -19,8 +19,9 @@ class OwnerGymQuerysetMixin:
 
         gym_id = self.request.query_params.get('gym_id')
         if gym_id:
-            queryset = queryset.filter(gym_id=gym_id)
-        return queryset
+            return queryset.filter(gym_id=gym_id)
+        # Unauthenticated callers must pass gym_id (e.g. public gym page)
+        return queryset.none()
 
     def perform_create(self, serializer):
         user = self.request.user
@@ -34,6 +35,8 @@ class OwnerGymQuerysetMixin:
             from rest_framework.exceptions import ValidationError
 
             raise ValidationError(
-                {'detail': 'You must own a gym before adding classes or trainers.'}
+                {
+                    'detail': 'You must own a gym before adding classes, trainers, or plans.'
+                }
             )
         serializer.save(gym_id=gym)

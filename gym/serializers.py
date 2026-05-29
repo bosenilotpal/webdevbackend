@@ -72,6 +72,17 @@ class ClassSerializer(serializers.ModelSerializer):
 
 
 class PlanSerializer(serializers.ModelSerializer):
+    gym_id = serializers.PrimaryKeyRelatedField(
+        queryset=Gym.objects.all(), required=False
+    )
+    description = serializers.CharField(required=False, allow_blank=True, default='')
+    features = serializers.CharField(required=False, allow_blank=True, default='')
+    classes = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Class.objects.all(),
+        required=False,
+    )
+
     class Meta:
         model = Plans
         fields = [
@@ -87,6 +98,7 @@ class PlanSerializer(serializers.ModelSerializer):
             'updated_at',
             'classes',
         ]
+        read_only_fields = ['id', 'sort_order', 'created_at', 'updated_at']
 
 
 class CmsItemSerializer(serializers.ModelSerializer):
